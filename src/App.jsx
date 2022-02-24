@@ -1,7 +1,7 @@
 import "./App.scss";
 import React from "react";
 import { Homepage } from "./pages/homepage/homepage.component";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Shoppage from "./pages/shop/shop.component";
 import Header from "./components/header/header.component";
 import SigninSignupPage from "./pages/sign-in-sign-up/sign-in-sign-up.component";
@@ -40,15 +40,19 @@ class App extends React.Component {
 				<Routes>
 					<Route path="/" element={<Homepage />} />
 					<Route path="/shop" element={<Shoppage />} />
-					<Route path="/signin" element={<SigninSignupPage />} />
+					<Route path="/signin" element={this.props.currentUser ? <Navigate replace to='/'/> : <SigninSignupPage/>}/>
 				</Routes>
 			</>
 		);
 	}
 }
 
+const mapStateToProp = ({user}) => ({
+	currentUser: user.currentUser,
+})
+
 const mapDispatchToProps = (dispatch) => ({
 	setCurrentUser: (user) => dispatch(setCurrentUser(user)),
 });
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProp, mapDispatchToProps)(App);
