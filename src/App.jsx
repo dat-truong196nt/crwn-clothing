@@ -8,6 +8,7 @@ import SigninSignupPage from "./pages/sign-in-sign-up/sign-in-sign-up.component"
 import { auth, createUserDocument } from "./assets/api/firebase.api";
 import { setCurrentUser } from "./redux/user/user.action";
 import { connect } from "react-redux";
+import CheckoutPage from "./pages/checkout/checkout.component";
 
 class App extends React.Component {
 	unsubscribeFromAuth = null;
@@ -40,16 +41,25 @@ class App extends React.Component {
 				<Routes>
 					<Route path="/" element={<Homepage />} />
 					<Route path="/shop" element={<Shoppage />} />
-					<Route path="/signin" element={this.props.currentUser ? <Navigate replace to='/'/> : <SigninSignupPage/>}/>
+					<Route path="/checkout" element={<CheckoutPage />} />
+					<Route
+						path="/signin"
+						element={
+							this.props.currentUser ? (
+								<Navigate replace to="/" />
+							) : (
+								<SigninSignupPage />
+							)
+						}
+					/>
 				</Routes>
 			</>
 		);
 	}
 }
-
-const mapStateToProp = ({user}) => ({
-	currentUser: user.currentUser,
-})
+const mapStateToProp = ({ user: { currentUser } }) => ({
+	currentUser,
+});
 
 const mapDispatchToProps = (dispatch) => ({
 	setCurrentUser: (user) => dispatch(setCurrentUser(user)),
