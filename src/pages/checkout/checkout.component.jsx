@@ -19,7 +19,7 @@ const CheckoutPage = ({ items, total }) => {
 				<div className="header-block">Remove</div>
 			</div>
 			{items.map((item) => (
-				<CheckoutItem key={item.id} {...item} />
+				<CheckoutItem key={item.id} item={item} />
 			))}
 			<div className="total">TOTAL: ${total}</div>
 		</div>
