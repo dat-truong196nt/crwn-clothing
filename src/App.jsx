@@ -9,18 +9,18 @@ import { auth, createUserDocument } from "./assets/api/firebase.api";
 import { setCurrentUser } from "./redux/user/user.action";
 import { connect } from "react-redux";
 import CheckoutPage from "./pages/checkout/checkout.component";
+import CollectionPage from "./pages/collection/collection.component";
 
 class App extends React.Component {
 	unsubscribeFromAuth = null;
 
 	componentDidMount() {
-		const { setCurrentUser } = this.props;
 		this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
 			if (!userAuth) return setCurrentUser(userAuth);
 
 			const userRef = await createUserDocument({ userAuth });
 			userRef.onSnapshot((snapshot) => {
-				setCurrentUser({
+				this.props.setCurrentUser({
 					id: snapshot.id,
 					...snapshot.data(),
 				});
@@ -40,7 +40,10 @@ class App extends React.Component {
 				</Routes>
 				<Routes>
 					<Route path="/" element={<Homepage />} />
-					<Route path="/shop" element={<Shoppage />} />
+					<Route path="/shop" >
+						<Route path={""} element={<Shoppage />} />
+						<Route path={":collectionId"} element={<CollectionPage />} />
+					</Route>
 					<Route path="/checkout" element={<CheckoutPage />} />
 					<Route
 						path="/signin"
@@ -52,6 +55,7 @@ class App extends React.Component {
 							)
 						}
 					/>
+					<Route path="*" element={<div>Page not Found</div>} />
 				</Routes>
 			</>
 		);
