@@ -7,6 +7,7 @@ import {
 import { createStructuredSelector } from "reselect";
 import "./checkout.style.scss";
 import CheckoutItem from "../../components/checkout-item/checkout-item.component";
+import StripeCheckoutButton from "../../components/stripe/stripe-button.component";
 
 const CheckoutPage = ({ items, total }) => {
 	return (
@@ -22,6 +23,12 @@ const CheckoutPage = ({ items, total }) => {
 				<CheckoutItem key={item.id} item={item} />
 			))}
 			<div className="total">TOTAL: ${total}</div>
+			<div className="text-warning">
+				Using this for card number testing purpose
+				<br/>
+				4242 4242 4242 4242
+			</div>
+			<StripeCheckoutButton price={total}/>
 		</div>
 	);
 };
