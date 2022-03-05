@@ -1,42 +1,41 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import "./header.styles.scss";
 
 import { ReactComponent as Logo } from "../../assets/crown.svg";
 import { auth } from "../../assets/api/firebase.api";
 import { connect } from "react-redux";
 import CartIcon from "../cart-icon/cart-icon.component";
 import Cart from "../cart-dropdown/cart-dropdown.component";
+import {
+	HeaderContainer,
+	LogoContainer,
+	OptionContainer,
+	OptionLink,
+} from "./header.styles";
 
 const Header = ({ currentUser, hidden }) => {
 	return (
-		<header className="header">
-			<Link to="/" className="logo-container">
+		<HeaderContainer>
+			<LogoContainer to="/">
 				<Logo className="logo" />
-			</Link>
-			<nav className="options">
-				<Link className="option" to="/shop">
-					SHOP
-				</Link>
-				<Link className="option" to="/shop">
-					CONTACT
-				</Link>
+			</LogoContainer>
+			<OptionContainer>
+				<OptionLink to="/shop">SHOP</OptionLink>
+				<OptionLink to="/shop">CONTACT</OptionLink>
 				{currentUser ? (
-					<div className="option" onClick={() => auth.signOut()}>
-						SIGN OUT
-					</div>
+					<OptionLink as='div' onClick={() => auth.signOut()}>SIGN OUT</OptionLink>
 				) : (
-					<Link className="option" to="/signin">
-						SIGN IN
-					</Link>
+					<OptionLink to="/signin">SIGN IN</OptionLink>
 				)}
 				<CartIcon />
-			</nav>
-			{!hidden && <Cart hidden={hidden}/>}
-		</header>
+			</OptionContainer>
+			{!hidden && <Cart hidden={hidden} />}
+		</HeaderContainer>
 	);
 };
 
-const mapStateToProp = ({user: {currentUser}, cart: {hidden} }) => ({currentUser, hidden})
+const mapStateToProp = ({ user: { currentUser }, cart: { hidden } }) => ({
+	currentUser,
+	hidden,
+});
 
 export default connect(mapStateToProp)(Header);
