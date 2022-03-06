@@ -1,6 +1,7 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import "firebase/compat/auth";
+import { batch } from "react-redux";
 // Import the functions you need from the SDKs you need
 // Your web app's Firebase configuration
 const config = {
@@ -42,4 +43,37 @@ export const createUserDocument = async ({ userAuth, additionalData }) => {
 
 	return userRef;
 };
+export const convertCollectionSnapshotToMap = (collections) => {
+	const tranformCollection = collections.docs.map((doc) => {
+		const { title, items } = doc.data();
+		return {
+			routeName: encodeURI(title.toLowerCase()),
+			id: doc.id,
+			title,
+			items,
+		};
+	});
+	return tranformCollection.reduce((acc, item) => {
+		acc[item.title.toLowerCase()] = item;
+		return acc;
+	}, {});
+};
+
+export const addCollectionItems = async (collectionKey, objectToAdd) => {
+	const collectionRef = firestore.collection(collectionKey);
+	const collectionSnapShot = await collectionRef.get();
+	if (collectionSnapShot.empty) {
+		try {
+			const batch = firestore.batch();
+			objectToAdd.forEach((obj) => {
+				const newDocRef = collectionRef.doc(obj.routeName);
+				batch.set(newDocRef, obj);
+			});
+			return await batch.commit();
+		} catch (err) {
+			console.log(err);
+		}
+	}
+};
+
 export default firebase;

@@ -5,18 +5,22 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import Shoppage from "./pages/shop/shop.component";
 import Header from "./components/header/header.component";
 import SigninSignupPage from "./pages/sign-in-sign-up/sign-in-sign-up.component";
-import { auth, createUserDocument } from "./assets/api/firebase.api";
+import {
+	addCollectionItems,
+	auth,
+	createUserDocument,
+} from "./assets/api/firebase.api";
 import { setCurrentUser } from "./redux/user/user.action";
 import { connect } from "react-redux";
 import CheckoutPage from "./pages/checkout/checkout.component";
 import CollectionPage from "./pages/collection/collection.component";
+import { SHOP_DATA } from "./redux/shop/shop.data";
 
 class App extends React.Component {
 	unsubscribeFromAuth = null;
 
 	componentDidMount() {
 		this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-			console.log('state changed', userAuth);
 			if (!userAuth) return this.props.setCurrentUser(userAuth);
 
 			const userRef = await createUserDocument({ userAuth });
@@ -27,6 +31,11 @@ class App extends React.Component {
 				});
 			});
 		});
+
+		addCollectionItems(
+			"collections",
+			Object.values(SHOP_DATA).map(({ title, items }) => ({ title, items }))
+		);
 	}
 
 	componentWillUnmount() {
@@ -41,7 +50,7 @@ class App extends React.Component {
 				</Routes>
 				<Routes>
 					<Route path="/" element={<Homepage />} />
-					<Route path="/shop" >
+					<Route path="/shop">
 						<Route path={""} element={<Shoppage />} />
 						<Route path={":collectionId"} element={<CollectionPage />} />
 					</Route>
@@ -62,8 +71,9 @@ class App extends React.Component {
 		);
 	}
 }
-const mapStateToProp = ({ user: { currentUser } }) => ({
+const mapStateToProp = ({ user: { currentUser }, shop: { collections } }) => ({
 	currentUser,
+	collections,
 });
 
 const mapDispatchToProps = (dispatch) => ({
